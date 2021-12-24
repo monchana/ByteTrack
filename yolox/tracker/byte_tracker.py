@@ -163,9 +163,10 @@ class BYTETracker(object):
         lost_stracks = []
         removed_stracks = []
 
-        if output_results.shape[1] == 5:
+        if output_results.shape[1] == 6:
             scores = output_results[:, 4]
             bboxes = output_results[:, :4]
+            categories = output_results[:, 5]
         else:
             output_results = output_results.cpu().numpy()
             scores = output_results[:, 4] * output_results[:, 5]
@@ -183,6 +184,8 @@ class BYTETracker(object):
         dets = bboxes[remain_inds]
         scores_keep = scores[remain_inds]
         scores_second = scores[inds_second]
+        
+        det_categories = categories[remain_inds]
 
         if len(dets) > 0:
             '''Detections'''
@@ -285,7 +288,7 @@ class BYTETracker(object):
         self.tracked_stracks, self.lost_stracks = remove_duplicate_stracks(self.tracked_stracks, self.lost_stracks)
         # get scores of lost tracks
         output_stracks = [track for track in self.tracked_stracks if track.is_activated]
-
+        # print(len(categories), len(det_categories), len(output_stracks))
         return output_stracks
 
 
